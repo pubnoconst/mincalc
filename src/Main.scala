@@ -110,6 +110,15 @@ def evaluateRPN(tokens: ArrayBuffer[Token]): BigDecimal =
   solvingStack.head
 
 @main def main(): Unit =
+  def isWindows: Boolean =
+    System.getProperty("os.name").toLowerCase.contains("win")
+
+  def boldYellow(text: String): String =
+    if (isWindows) text else s"\u001b[1;33m$text\u001b[0m"
+
+  def boldRed(text: String): String =
+    if (isWindows) text else s"\u001b[1;31m$text\u001b[0m"
+
   println("Math Expression Calculator (type 'exit' to quit)")
   while true do
     try
@@ -121,9 +130,7 @@ def evaluateRPN(tokens: ArrayBuffer[Token]): BigDecimal =
       val tokens = tokenize(input)
       val rpn = toRPN(tokens)
       val result = evaluateRPN(rpn)
-      println(s"\u001b[1;33m$result\u001b[0m") // Bold yellow output
+      println(boldYellow(s"Result: $result"))
     catch
       case NonFatal(e) =>
-        println(
-          s"\u001b[1;31mError: ${e.getMessage}\u001b[0m"
-        ) // Bold red error message
+        println(boldRed(s"Error: ${e.getMessage}"))
