@@ -121,7 +121,6 @@ def evaluateRPN(tokens: ArrayBuffer[Token]): BigDecimal =
       val tokens = tokenize(input)
       val rpn = toRPN(tokens)
       val result = evaluateRPN(rpn)
-      // println(boldYellow(s"Result: $result"))
       Console.println(s"${RESET}${GREEN}${BOLD}>>> ${result}${RESET}")
     catch
       case NonFatal(e) =>
