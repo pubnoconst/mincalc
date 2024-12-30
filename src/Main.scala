@@ -56,8 +56,7 @@ def toRPN(tokens: List[Token]): ArrayBuffer[Token] =
         do
           output.append(Token.Operand(holdingStack.head))
           holdingStack = holdingStack.tail
-        holdingStack =
-          op +: holdingStack 
+        holdingStack = op +: holdingStack
 
   while holdingStack.nonEmpty do
     output.append(Token.Operand(holdingStack.head))
@@ -77,9 +76,9 @@ def apply_percentage(
     rhs: BigDecimal,
     secondaryOp: Token
 ): BigDecimal =
-  if secondaryOp == Token.Operand('+') then lhs + lhs * rhs / 100
-  else if secondaryOp == Token.Operand('-') then lhs - lhs * rhs / 100
-  else throw new IllegalArgumentException("Malformed RPN <percentage>")
+  secondaryOp match
+    case Token.Operand(op) => apply(lhs, rhs * lhs / 100, op)
+    case _ => throw new IllegalArgumentException()
 
 def evaluateRPN(tokens: ArrayBuffer[Token]): BigDecimal =
   var solvingStack = List[BigDecimal]()
@@ -109,18 +108,19 @@ def evaluateRPN(tokens: ArrayBuffer[Token]): BigDecimal =
     i += 1
   solvingStack.head
 
+def evaluate(expr: String): BigDecimal = 
+  evaluateRPN(toRPN(tokenize(expr)))  
+
 @main def main(): Unit =
   println("Math Expression Calculator (type 'exit' to quit)")
   while true do
     try
-      print(">>> ")
+      Console.print(">>> ")
       val input = StdIn.readLine().trim
       if input.toLowerCase == "exit" then
-        println("Goodbye!")
+        Console.println("Goodbye!")
         return
-      val tokens = tokenize(input)
-      val rpn = toRPN(tokens)
-      val result = evaluateRPN(rpn)
+      val result = evaluate(input)
       Console.println(s"${RESET}${GREEN}${BOLD}>>> ${result}${RESET}")
     catch
       case NonFatal(e) =>
