@@ -5,6 +5,7 @@ import java.util.IllegalFormatException
 import scala.io.StdIn
 import scala.collection.mutable.ArrayBuffer
 import scala.util.control.NonFatal
+import Console.{RESET, GREEN, BOLD, MAGENTA}
 
 enum Token:
   case Value(n: BigDecimal)
@@ -49,7 +50,6 @@ def toRPN(tokens: List[Token]): ArrayBuffer[Token] =
         if holdingStack.nonEmpty && holdingStack.head == '(' then
           holdingStack = holdingStack.tail
       case Token.Operand(op) =>
-        // Handle operator precedence
         while holdingStack.nonEmpty && precedence(
             holdingStack.head
           ) >= precedence(op)
@@ -57,8 +57,8 @@ def toRPN(tokens: List[Token]): ArrayBuffer[Token] =
           output.append(Token.Operand(holdingStack.head))
           holdingStack = holdingStack.tail
         holdingStack =
-          op +: holdingStack // Push current operator onto the stack
-  // Append remaining operators in the stack to output
+          op +: holdingStack 
+
   while holdingStack.nonEmpty do
     output.append(Token.Operand(holdingStack.head))
     holdingStack = holdingStack.tail
@@ -110,15 +110,6 @@ def evaluateRPN(tokens: ArrayBuffer[Token]): BigDecimal =
   solvingStack.head
 
 @main def main(): Unit =
-  def isWindows: Boolean =
-    System.getProperty("os.name").toLowerCase.contains("win")
-
-  def boldYellow(text: String): String =
-    if (isWindows) text else s"\u001b[1;33m$text\u001b[0m"
-
-  def boldRed(text: String): String =
-    if (isWindows) text else s"\u001b[1;31m$text\u001b[0m"
-
   println("Math Expression Calculator (type 'exit' to quit)")
   while true do
     try
@@ -130,7 +121,8 @@ def evaluateRPN(tokens: ArrayBuffer[Token]): BigDecimal =
       val tokens = tokenize(input)
       val rpn = toRPN(tokens)
       val result = evaluateRPN(rpn)
-      println(boldYellow(s"Result: $result"))
+      // println(boldYellow(s"Result: $result"))
+      Console.println(s"${RESET}${GREEN}${BOLD}>>> ${result}${RESET}")
     catch
       case NonFatal(e) =>
-        println(boldRed(s"Error: ${e.getMessage}"))
+        Console.println(s"${RESET}${MAGENTA}Error : $e${RESET}")
